@@ -2,6 +2,11 @@
 # Dr Andrew Cowley, ESI, Unversity of Exeter, UK
 # (c) 2017
 
+# More information on the rgbif package can be found at the following URLs:
+# - https://www.gbif.org/tool/81747/rgbif-an-interface-to-the-gbif-api-for-the-r-statistical-programming-environment
+# - https://ropensci.org/tutorials/rgbif_tutorial.html
+# - https://cran.r-project.org/web/packages/rgbif/vignettes/rgbif_vignette.html 
+
 # To Do : Handle errors
 
 rm(list=ls())
