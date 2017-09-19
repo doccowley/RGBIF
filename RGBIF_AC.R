@@ -38,40 +38,44 @@ for (i in 1:nrow(sp_list)){
   print(sp_name)
   
   key <- name_suggest(q=sp_name, rank='species')$key[1]
-  
-  #Loop : search records
-  my_start=0
-  for (j in 1:my_loops){
-    dat <- occ_search(taxonKey=key, fields=c('name', 'scientificName', 'key', 'publishingCountry', 'speciesKey', 'decimalLatitude','decimalLongitude', 'country'), limit=my_limit, start=my_start)
-    
-    if(exists("mydata")) {
-      mydata <- rbind(mydata, dat$data)
-    } else {
-      cat(dat$meta$count, "record(s) in", ceiling(dat$meta$count/my_limit), "search(es) for this species (max", my_loops, "searches)\n")
-      mydata <- dat$data
+  if(is.null(key)){
+    cat("Oooops!, '", sp_name, "' cannot be found!\n", sep='')
+    break
+  } else {
+    #Loop : search records
+    my_start=0
+    for (j in 1:my_loops){
+      dat <- occ_search(taxonKey=key, fields=c('name', 'scientificName', 'key', 'publishingCountry', 'speciesKey', 'decimalLatitude','decimalLongitude', 'country'), limit=my_limit, start=my_start)
+      
+      if(exists("mydata")) {
+        mydata <- rbind(mydata, dat$data)
+      } else {
+        cat(dat$meta$count, "record(s) in", ceiling(dat$meta$count/my_limit), "search(es) for this species (max", my_loops, "searches)\n")
+        mydata <- dat$data
+      }
+      
+      cat(".")
+      
+      if(isTRUE(dat$meta$endOfRecords)) break
+      
+      my_start=j*my_limit
     }
-
-    cat(".")
     
-    if(isTRUE(dat$meta$endOfRecords)) break
-
-    my_start=j*my_limit
+    cat("\n")
+    mydata %>% print(n = 5)
+    
+    #Create filename
+    file_plot=paste(out_folder,sp_name,'.png', sep='')
+    my_plot <- gbifmap(mydata)
+    png(filename=file_plot)
+    plot(my_plot)
+    dev.off()
+    
+    #save data to directory
+    file_data=paste(out_folder,sp_name,'.csv', sep='')
+    write.table(mydata, file_data, row.names = FALSE, sep = ",")
+    
+    rm(mydata)
+    cat("---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|\n") # end of species marker (divided into 10s)
   }
-  
-  cat("\n")
-  mydata %>% print(n = 5)
-  
-  #Create filename
-  file_plot=paste(out_folder,sp_name,'.png', sep='')
-  my_plot <- gbifmap(mydata)
-  png(filename=file_plot)
-  plot(my_plot)
-  dev.off()
-  
-  #save data to directory
-  file_data=paste(out_folder,sp_name,'.csv', sep='')
-  write.table(mydata, file_data, row.names = FALSE, sep = ",")
-  
-  rm(mydata)
-  cat("---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|\n") # end of species marker (divided into 10s)
 }
