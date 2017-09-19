@@ -23,6 +23,7 @@ my_limit=1000
 root="~/Desktop/GBIF_er403"
 species_file="speciestest.txt"
 out_folder="species_lists/plant_dist_raw/"
+gbif_unknown="gbif_unknown.txt"
 
 #Set working directory
 #setwd("~/UoE_U_Drive/GBIF_auto")
@@ -40,7 +41,8 @@ for (i in 1:nrow(sp_list)){
   key <- name_suggest(q=sp_name, rank='species')$key[1]
   if(is.null(key)){
     cat("Oooops!, '", sp_name, "' cannot be found!\n", sep='')
-    break
+    write(sp_name,file=gbif_unknown,append=TRUE)
+    #break
   } else {
     #Loop : search records
     my_start=0
